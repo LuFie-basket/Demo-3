@@ -1,0 +1,1040 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dienstplan Pro 4.0</title>
+<style>
+:root{
+  --bg:#f5f7fb;--panel:#fff;--soft:#f8fafc;--text:#172033;--muted:#667085;--line:#e4e7ec;
+  --primary:#2457d6;--primary2:#1d4ed8;--primary-soft:#eef3ff;--nav:#14213d;--ok:#16845b;
+  --warn:#b66a00;--bad:#c1352b;--shadow:0 12px 35px rgba(16,24,40,.08);--radius:16px;
+  --tile-people:#eef3ff;--tile-functions:#ecfdf3;--tile-shifts:#fff7e6;--tile-training:#fff1f0
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--nav);color:#fff;padding:22px 16px;display:flex;flex-direction:column;gap:22px}
+.brand{display:flex;gap:12px;align-items:center;padding:0 8px}.brandmark{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#6f91ff,var(--primary));display:grid;place-items:center;font-weight:800;overflow:hidden;flex:0 0 42px}.brandmark img{width:100%;height:100%;object-fit:contain;background:#fff;padding:3px}.brand small{display:block;color:#b9c4da;margin-top:2px}.brand strong{display:block;max-width:165px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#cbd4e6;text-align:left;padding:11px 12px;border-radius:10px;font-weight:650}.nav button:hover{background:#1e2d4d;color:#fff}.nav button.active{background:#fff;color:#14213d}
+.sidebar-foot{margin-top:auto;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:12px;color:#cbd4e6;font-size:12px;line-height:1.45}
+.workspace{min-width:0}.topbar{height:72px;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;position:sticky;top:0;z-index:10}
+.topbar h2{margin:0;font-size:17px}.topbar p{margin:3px 0 0;color:var(--muted);font-size:12px}.top-actions{display:flex;gap:10px;align-items:center}.chip{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:var(--primary-soft);color:#1d4ed8;font-size:12px;font-weight:750}.dot{width:8px;height:8px;border-radius:50%;background:#22a06b}
+main{max-width:1550px;margin:0 auto;padding:28px}.pagehead{display:flex;justify-content:space-between;gap:18px;align-items:flex-start;margin-bottom:22px}.pagehead h1{margin:0 0 6px;font-size:27px}.pagehead p{margin:0;color:var(--muted)}
+.grid{display:grid;gap:16px}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.stack{display:grid;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow)}.card h3{margin:0 0 14px;font-size:16px}.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.metric{position:relative;overflow:hidden}.metric b{display:block;font-size:30px;margin-top:8px}.metric:after{content:"";position:absolute;width:90px;height:90px;right:-25px;top:-25px;border-radius:50%;background:rgba(255,255,255,.55)}.metric.people{background:var(--tile-people)}.metric.functions{background:var(--tile-functions)}.metric.shifts{background:var(--tile-shifts)}.metric.training{background:var(--tile-training)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;padding:10px 13px;border-radius:10px;font-weight:700;color:#344054}.btn:hover{transform:translateY(-1px);box-shadow:0 5px 15px rgba(16,24,40,.08)}.btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}.btn.danger{color:var(--bad)}.btn.small{padding:7px 9px;font-size:12px}
+label{display:grid;gap:6px;font-size:13px;font-weight:700;color:#344054}input,select,textarea{width:100%;border:1px solid #d5dbe5;border-radius:10px;padding:10px 11px;background:#fff;color:var(--text)}textarea{min-height:90px;resize:vertical}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.formgrid .wide{grid-column:1/-1}
+table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#667085;background:#f8fafc}.scroll{overflow:auto;border-radius:12px;border:1px solid var(--line)}
+.badge{display:inline-flex;padding:5px 8px;border-radius:999px;background:#eef2f7;font-size:11px;font-weight:750}.function-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800;color:#fff}.function-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:0 0 10px}.badge.ok{background:#ecfdf3;color:#087443}.badge.warn{background:#fff7e6;color:#9a5b00}.badge.bad{background:#fff1f0;color:#b42318}
+.notice{padding:13px 14px;border-radius:12px;border-left:4px solid var(--primary);background:var(--primary-soft);font-size:13px}.notice.ok{border-color:var(--ok);background:#ecfdf3}.notice.warn{border-color:var(--warn);background:#fff7e6}.notice.bad{border-color:var(--bad);background:#fff1f0}
+.view.hidden{display:none}.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.toolbar input{max-width:320px}.right{margin-left:auto}
+.calendar-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.calendar{display:grid;grid-template-columns:135px repeat(7,minmax(120px,1fr));min-width:1050px}.calcell{padding:9px;min-height:96px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}.calhead{min-height:auto;background:#f3f6fa;font-weight:750}.shift{margin-top:6px;padding:7px 8px;border-radius:8px;background:var(--primary-soft);border-left:3px solid var(--primary);font-size:12px;line-height:1.35}
+.progress{height:10px;border-radius:999px;background:#e8ecf2;overflow:hidden}.progress span{display:block;height:100%;background:var(--primary);border-radius:999px}
+.empty{padding:26px;text-align:center;color:var(--muted)}.row{display:flex;justify-content:space-between;gap:12px;align-items:center}.mini{font-size:12px}.live-duty{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.compact-card{padding:14px}.compact-card h3{margin-bottom:9px}.compact-card .stack{gap:9px}.compact-card .notice{padding:9px 11px;font-size:12px}.compact-card .progress{height:7px}
+.sfunction-create-card{padding:28px;width:100%}
+.sfunction-create-card .formgrid{grid-template-columns:repeat(3,minmax(0,1fr));align-items:end}
+.sfunction-create-card .wide{grid-column:span 2}
+.sfunction-create-card textarea{min-height:105px}
+.qualification-rhythm-box{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:14px;border:1px solid var(--line);border-radius:12px;background:#f8fafc}
+@media(max-width:950px){.sfunction-create-card .formgrid,.qualification-rhythm-box{grid-template-columns:1fr}.sfunction-create-card .wide{grid-column:span 1}}.duty-card{border:1px solid var(--line);border-left:5px solid var(--primary);border-radius:12px;padding:14px;background:#fff}.admin-only.hidden-role{display:none!important}.report-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.status-line{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.table-actions{display:flex;gap:6px;flex-wrap:wrap}@media(max-width:900px){.live-duty,.report-controls{grid-template-columns:1fr}}.color-input{height:44px;padding:4px}.logo-preview{width:120px;height:80px;border:1px dashed var(--line);border-radius:12px;background:#fff;display:grid;place-items:center;overflow:hidden}.logo-preview img{max-width:100%;max-height:100%;object-fit:contain}.branding-grid{display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:start}.preset-row{display:flex;gap:8px;flex-wrap:wrap}.preset{width:34px;height:34px;border-radius:9px;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+
+.print-only{display:none}
+@media print{
+  @page{size:A4 landscape;margin:12mm}
+  body{background:#fff;color:#000}
+  .sidebar,.topbar,.pagehead,.toolbar,.btn,.actions,.no-print,.view:not(#calendar){display:none!important}
+  .app,.workspace,main{display:block!important;max-width:none!important;margin:0!important;padding:0!important}
+  #calendar{display:block!important}
+  #calendar .card:first-child,#shiftFormCard{display:none!important}
+  .calendar-wrap{border:0!important;overflow:visible!important}
+  .calendar{min-width:0!important;grid-template-columns:115px repeat(7,1fr)!important}
+  .calcell{min-height:70px!important;padding:6px!important;font-size:10px!important;background:#fff!important;color:#000!important}
+  .calhead{background:#eee!important}
+  .shift{background:#f3f3f3!important;border-left:2px solid #000!important;color:#000!important;padding:4px!important}
+  .shift button{display:none!important}
+  .print-only{display:block!important}
+  .print-header{margin-bottom:10mm;border-bottom:2px solid #000;padding-bottom:4mm}
+  .print-header-row{display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .print-logo{max-height:18mm;max-width:45mm;object-fit:contain}
+  .print-title{font-size:20pt;font-weight:800;margin:0}
+  .print-meta{font-size:9pt;margin-top:2mm}
+  .print-footer{margin-top:6mm;border-top:1px solid #999;padding-top:3mm;font-size:8pt;display:flex;justify-content:space-between}
+  #printPersonSheet{display:block!important}
+  body.print-person #calendarGrid{display:none!important}
+  body.print-person #printPersonSheet{display:block!important}
+  body:not(.print-person) #printPersonSheet{display:none!important}
+  .person-print-table{width:100%;border-collapse:collapse}
+  .person-print-table th,.person-print-table td{border:1px solid #777;padding:8px;font-size:10pt}
+  .person-print-table th{background:#eee}
+}
+
+@media(max-width:1100px){.app{grid-template-columns:210px 1fr}.g4{grid-template-columns:repeat(2,1fr)}.g2,.g3{grid-template-columns:1fr}}
+@media(max-width:760px){.app{display:block}.sidebar{position:relative;height:auto}.sidebar-foot{display:none}.nav{display:flex;overflow-x:auto}.nav button{white-space:nowrap}.topbar{position:relative;padding:14px 16px;height:auto}.top-actions .chip{display:none}main{padding:18px 14px}.g4,.g3,.g2,.formgrid{grid-template-columns:1fr}.pagehead{flex-direction:column}.formgrid .wide{grid-column:auto}}
+
+.dashboard-toolbar{display:flex;align-items:center;gap:10px;justify-content:flex-end}
+.dashboard-edit-panel{display:none;padding:14px 16px;border:1px dashed var(--primary);background:#f5f8ff;border-radius:14px}
+.dashboard-editing .dashboard-edit-panel{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.dashboard-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.dashboard-widget{grid-column:span 6;min-height:220px;position:relative;transition:.2s ease}
+.dashboard-widget[data-size="wide"]{grid-column:span 12}
+.dashboard-widget[data-size="compact"]{grid-column:span 4}
+.dashboard-widget.dragging{opacity:.45;transform:scale(.99)}
+.dashboard-editing .dashboard-widget{outline:2px dashed #9db7f7;cursor:grab}
+.dashboard-widget-controls{display:none;position:absolute;top:12px;right:12px;z-index:3;gap:6px}
+.dashboard-editing .dashboard-widget-controls{display:flex}
+.dashboard-widget-controls button{width:30px;height:30px;padding:0;border-radius:8px}
+.dashboard-widget.hidden-widget{display:none}
+.widget-empty{padding:24px;text-align:center;color:var(--muted)}
+.expiry-list{display:grid;gap:9px}
+.expiry-item{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(140px,1fr) auto;gap:12px;align-items:center;border-bottom:1px solid var(--line);padding:10px 0}
+.expiry-item:last-child{border-bottom:0}
+.widget-footer{margin-top:12px;padding-top:10px;border-top:1px solid var(--line);text-align:right}
+.coverage-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.coverage-box{padding:14px;border:1px solid var(--line);border-radius:12px;background:#fff}
+@media(max-width:1100px){
+ .dashboard-widget,.dashboard-widget[data-size="compact"]{grid-column:span 6}
+ .coverage-overview{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .dashboard-widget,.dashboard-widget[data-size="wide"],.dashboard-widget[data-size="compact"]{grid-column:span 12}
+ .expiry-item{grid-template-columns:1fr}
+ .coverage-overview{grid-template-columns:1fr}
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brandmark" id="brandMark"><span id="brandInitials">DP</span></div><div><strong id="brandCompany">Dienstplan Pro</strong><small>Version 4.3 Kundendemo</small></div></div>
+  <nav class="nav">
+    <button class="active" data-view="dashboard">⌂ Dashboard</button>
+    <button data-view="calendar">▦ Kalender</button>
+    <button data-view="people">👥 Personal</button>
+    <button data-view="functions">S S-Funktionen</button>
+    <button data-view="swap">⇄ Diensttausch</button>
+    <button data-view="training">✓ Qualifikationen</button>
+    <button data-view="reports">▥ Auswertungen</button>
+    <button data-view="settings">⚙ Einstellungen</button>
+  </nav>
+  <div class="sidebar-foot"><strong>Lokale Testversion</strong><br>Daten werden in diesem Browser gespeichert. Kein echter Server, kein echter Login.</div>
+</aside>
+
+<div class="workspace">
+<header class="topbar">
+  <div><h2 id="topTitle">Dashboard</h2><p id="topSub">Planung und Krisenorganisation im Überblick</p></div>
+  <div class="top-actions">
+    <span class="chip"><span class="dot"></span> System bereit</span>
+    <select id="roleSelect" style="width:auto"><option>Administrator</option><option>Teamleitung</option><option>Mitarbeiter</option></select>
+  </div>
+</header>
+
+<main>
+  <div class="pagehead"><div><h1 id="pageTitle">Dashboard</h1><p id="pageDesc">Aktuelle Bereitschaften, kommende Dienste und fällige Qualifikationen.</p></div><div class="actions"><button class="btn" id="resetDemo">Demo zurücksetzen</button></div></div>
+
+  <section id="dashboard" class="view stack">
+    <div class="dashboard-toolbar">
+      <button class="btn admin-only" id="editDashboard">Dashboard anpassen</button>
+    </div>
+
+    <div class="dashboard-edit-panel" id="dashboardEditPanel">
+      <b>Dashboard bearbeiten</b>
+      <span class="muted">Kacheln ziehen, Größe ändern oder ausblenden.</span>
+      <label><input type="checkbox" id="showCurrentWidget" checked> Aktuelle Bereitschaft</label>
+      <label><input type="checkbox" id="showUpcomingWidget" checked> Kommende Dienste</label>
+      <label><input type="checkbox" id="showQualificationWidget" checked> Qualifikationen</label>
+      <button class="btn" id="resetDashboardLayout">Layout zurücksetzen</button>
+      <button class="btn primary" id="finishDashboardEdit">Fertig</button>
+    </div>
+
+    <div class="dashboard-grid" id="dashboardGrid">
+      <div class="card dashboard-widget" id="widgetCurrent" data-widget="current" data-size="wide" draggable="false">
+        <div class="dashboard-widget-controls">
+          <button class="btn small" data-widget-size="compact" title="Klein">S</button>
+          <button class="btn small" data-widget-size="normal" title="Mittel">M</button>
+          <button class="btn small" data-widget-size="wide" title="Breit">L</button>
+          <button class="btn small danger" data-hide-widget="current" title="Ausblenden">×</button>
+        </div>
+        <div class="row"><h3>Aktuelle Bereitschaft und Dienste</h3><span class="badge" id="currentTimeBadge"></span></div>
+        <div id="currentDuties" class="live-duty"></div>
+        <div class="widget-footer"><button class="btn small" data-open-view="calendar">Zum Kalender</button></div>
+      </div>
+
+      <div class="card dashboard-widget" id="widgetUpcoming" data-widget="upcoming" data-size="normal" draggable="false">
+        <div class="dashboard-widget-controls">
+          <button class="btn small" data-widget-size="compact" title="Klein">S</button>
+          <button class="btn small" data-widget-size="normal" title="Mittel">M</button>
+          <button class="btn small" data-widget-size="wide" title="Breit">L</button>
+          <button class="btn small danger" data-hide-widget="upcoming" title="Ausblenden">×</button>
+        </div>
+        <h3>Kommende Dienste</h3>
+        <div id="nextShifts"></div>
+        <div class="widget-footer"><button class="btn small" data-open-view="calendar">Alle Dienste anzeigen</button></div>
+      </div>
+
+      <div class="card dashboard-widget" id="widgetQualifications" data-widget="qualifications" data-size="normal" draggable="false">
+        <div class="dashboard-widget-controls">
+          <button class="btn small" data-widget-size="compact" title="Klein">S</button>
+          <button class="btn small" data-widget-size="normal" title="Mittel">M</button>
+          <button class="btn small" data-widget-size="wide" title="Breit">L</button>
+          <button class="btn small danger" data-hide-widget="qualifications" title="Ausblenden">×</button>
+        </div>
+        <h3>Qualifikationen laufen ab</h3>
+        <div id="expiringQualifications" class="expiry-list"></div>
+        <div class="widget-footer"><button class="btn small" data-open-view="training">Alle Qualifikationen anzeigen</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="calendar" class="view hidden stack">
+    <div class="card">
+      <div class="toolbar"><button class="btn" id="prevWeek">← Vorherige Woche</button><button class="btn" id="todayWeek">Heute</button><button class="btn" id="nextWeek">Nächste Woche →</button><span class="badge" id="weekLabel"></span><button class="btn" id="printWeek">🖨 Wochenplan drucken</button>
+<button class="btn" id="printPerson">🖨 Mitarbeiterplan drucken</button>
+<button class="btn primary right admin-only" id="openShiftForm">Dienst anlegen</button></div>
+    </div>
+    <div class="print-only print-header" id="printHeader"></div>
+<div class="calendar-wrap"><div class="calendar" id="calendarGrid"></div></div>
+<div class="print-only" id="printPersonSheet"></div>
+<div class="print-only print-footer" id="printFooter"></div>
+    <div class="card no-print">
+      <h3>Druckeinstellungen</h3>
+      <div class="formgrid">
+        <label>Mitarbeiter für Einzeldruck<select id="printPersonSelect"></select></label>
+        <label>Zusatzüberschrift<input id="printNote" placeholder="z. B. Bereitschaftsdienst August"></label>
+      </div>
+      <p class="muted" style="margin-bottom:0">Im Druckdialog kann der Plan direkt gedruckt oder als PDF gespeichert werden.</p>
+    </div>
+    <div class="card hidden" id="shiftFormCard">
+      <h3 id="shiftFormTitle">Neuen Dienst anlegen</h3><input type="hidden" id="editingShiftId">
+      <div class="formgrid">
+        <label>Beginn – Datum<input type="date" id="shiftStartDate"></label>
+        <label>Beginn – Uhrzeit<input type="time" id="shiftStart" value="08:00"></label>
+        <label>Ende – Datum<input type="date" id="shiftEndDate"></label>
+        <label>Ende – Uhrzeit<input id="shiftEnd" value="24:00" list="timeOptions" placeholder="z. B. 24:00"></label>
+        <datalist id="timeOptions"><option value="00:00"><option value="08:00"><option value="16:00"><option value="20:00"><option value="24:00"></datalist>
+        <label>Person<select id="shiftPerson"></select></label>
+        <label>S-Funktion<select id="shiftFunction"></select></label>
+        <label>Dienstart<select id="shiftType"><option>Rufbereitschaft</option><option>Regeldienst</option><option>Übung</option></select></label>
+        <label>Tatsächliche Einsatzstunden<input id="shiftActualHours" type="number" min="0" step="0.25" value="0"></label>
+        <label>Wegzeit in Stunden<input id="shiftTravelHours" type="number" min="0" step="0.25" value="0"></label>
+        <label>Kostenstelle<input id="shiftCostCenter" placeholder="z. B. KST-100"></label>
+      </div>
+      <div class="actions" style="margin-top:14px"><button class="btn primary" id="saveShift">Dienst speichern</button><button class="btn" id="cancelShift">Abbrechen</button></div>
+      <div id="shiftMsg" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section id="people" class="view hidden stack">
+    <div class="card">
+      <div class="toolbar">
+        <input id="peopleSearch" placeholder="Nach Name, Abteilung, Funktion oder Qualifikation suchen">
+        <label class="btn admin-only" style="display:inline-block">Excel-Personalliste importieren<input type="file" id="peopleExcelImport" accept=".xlsx,.xls,.csv" style="display:none"></label>
+        <button class="btn admin-only" id="downloadPeopleTemplate">Excel-Vorlage herunterladen</button>
+        <button class="btn primary right admin-only" id="openPersonForm">Person hinzufügen</button>
+      </div>
+      <div id="peopleImportMsg" style="margin-top:12px"></div>
+    </div>
+    <div class="card hidden" id="personFormCard">
+      <h3>Neue Person anlegen</h3>
+      <div class="formgrid">
+        <label>Vorname<input id="pFirst"></label><label>Nachname<input id="pLast"></label>
+        <label>E-Mail<input id="pEmail" type="email"></label><label>Abteilung<input id="pDepartment" placeholder="z. B. Personal, Technik, Pflege"></label>
+        <label>S-Funktion<select id="pFunction"></select></label><label>Rolle<select id="pRole"><option>Mitarbeiter</option><option>Teamleitung</option><option>Administrator</option></select></label>
+        <label class="wide">Qualifikationen, durch Komma getrennt<input id="pQualifications" placeholder="Ersthilfe, Führerschein B, Krisenstab"></label>
+      </div>
+      <div class="actions" style="margin-top:14px"><button class="btn primary admin-only" id="savePerson">Speichern</button><button class="btn" id="cancelPerson">Abbrechen</button></div>
+      <div id="personMsg" style="margin-top:12px"></div>
+    </div>
+    <div class="card"><div id="peopleTable"></div></div>
+  </section>
+
+  <section id="functions" class="view hidden stack">
+    <div class="grid">
+      <div class="card sfunction-create-card">
+        <h3>Neue S-Funktion</h3><p class="muted">Kürzel, Farbe, Mindestpersonal und Bezeichnung können direkt festgelegt werden.</p>
+        <div class="formgrid">
+          <label>Kürzel<input id="fCode" placeholder="z. B. S7"></label>
+          <label>Farbe<input class="color-input" id="fColor" type="color" value="#db2777"></label>
+          <label class="wide">Bezeichnung<input id="fName" placeholder="optional"></label>
+          <label>Beschreibung<textarea id="fDesc" placeholder="optional"></textarea></label><label>Mindestpersonal<input id="fMinimum" type="number" min="0" value="1"></label>
+        </div>
+        <div class="actions" style="margin-top:14px"><button class="btn primary admin-only" id="saveFunction">Funktion anlegen</button></div>
+        <div id="functionMsg" style="margin-top:12px"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="row"><h3>Teamabdeckung nach S-Funktion</h3><span class="muted">Personalpool im Vergleich zur Untergrenze</span></div>
+      <div id="functionCoverage" class="coverage-overview"></div>
+    </div>
+    <div class="card"><div id="functionList"></div></div>
+  </section>
+
+  <section id="swap" class="view hidden stack">
+    <div class="grid g2">
+      <div class="card">
+        <h3>Diensttausch prüfen</h3>
+        <div class="formgrid">
+          <label>Abgebende Person<select id="swapFrom"></select></label>
+          <label>Übernehmende Person<select id="swapTo"></select></label>
+          <label class="wide">Dienst<select id="swapShift"></select></label>
+        </div>
+        <div class="actions" style="margin-top:14px"><button class="btn primary" id="checkSwap">Automatisch prüfen</button><button class="btn" id="executeSwap">Tausch durchführen</button></div>
+      </div>
+      <div class="card"><h3>Prüfergebnis</h3><div id="swapResult" class="notice">Noch keine Prüfung durchgeführt.</div></div>
+    </div>
+  </section>
+
+  <section id="training" class="view hidden stack">
+    <div class="card">
+      <h3>Qualifikation eintragen</h3>
+      <div class="formgrid">
+        <label>Person<select id="trainingPerson"></select></label>
+        <label>Qualifikation<input id="trainingName" placeholder="z. B. Erste Hilfe"></label>
+        <label>Erworben am<input id="trainingAcquired" type="date"></label>
+        <label>Auffrischungsrhythmus
+          <select id="trainingRhythm">
+            <option value="0">Individuell / kein fixer Rhythmus</option>
+            <option value="6">Alle 6 Monate</option>
+            <option value="12">Jährlich</option>
+            <option value="24">Alle 2 Jahre</option>
+            <option value="36">Alle 3 Jahre</option>
+            <option value="60">Alle 5 Jahre</option>
+          </select>
+        </label>
+        <label>Erinnerung vor Fälligkeit
+          <select id="trainingReminder">
+            <option value="30">30 Tage vorher</option>
+            <option value="60">60 Tage vorher</option>
+            <option value="90" selected>90 Tage vorher</option>
+            <option value="180">180 Tage vorher</option>
+          </select>
+        </label>
+        <label>Gültig bis<input id="trainingExpiry" type="date"></label>
+        <label>Auffrischung ab<input id="trainingRefresh" type="date"></label>
+        <label>Nachweis / Bemerkung<input id="trainingNote" placeholder="z. B. Zertifikat 2026-17"></label>
+      </div>
+      <div class="actions" style="margin-top:14px"><button class="btn primary admin-only" id="addTraining">Eintragen</button></div>
+    </div>
+    <div class="card"><h3>Qualifikationsmatrix</h3><div id="trainingTable"></div></div>
+  </section>
+
+  <section id="reports" class="view hidden stack">
+    <div class="card">
+      <h3>Auswertungszeitraum</h3>
+      <div class="report-controls">
+        <label>Zeitraum<select id="reportPeriod"><option value="week">Woche</option><option value="quarter">Quartal</option><option value="year">Jahr</option><option value="all">Gesamt</option></select></label>
+        <label>Referenzdatum<input id="reportDate" type="date"></label>
+        <label>S-Funktion<select id="reportFunctionFilter"><option value="">Alle Funktionen</option></select></label>
+        <div class="actions" style="align-items:end"><button class="btn primary" id="exportActivity">Aktivität als Excel</button><button class="btn" id="exportPayroll">Payroll-Excel</button><button class="btn" id="exportServices">Dienstplan-Excel</button></div>
+      </div>
+    </div>
+    <div class="grid g3">
+      <div class="card"><h3>Personalbestand</h3><b style="font-size:34px" id="rPeople"></b><p class="muted">aktive Datensätze</p></div>
+      <div class="card"><h3>Tatsächliche Einsatzzeit</h3><b style="font-size:34px" id="rHours"></b><p class="muted">Regeldienst plus Einsätze</p></div>
+      <div class="card"><h3>Qualifikationsquote</h3><b style="font-size:34px" id="rQual"></b><p class="muted">gültige Einträge</p></div>
+    </div>
+    <div class="card"><h3>Aktivität nach Person</h3><div id="activityTable"></div></div>
+    <div class="card"><h3>Besetzung nach S-Funktion</h3><div id="reportFunctions" class="stack"></div></div>
+  </section>
+
+  <section id="settings" class="view hidden stack">
+    <div class="card">
+      <h3>Firmenauftritt und Logo</h3>
+      <div class="branding-grid">
+        <div>
+          <div class="logo-preview" id="logoPreview"><span class="muted">Kein Logo</span></div>
+          <button class="btn small danger" id="removeLogo" style="margin-top:8px">Logo entfernen</button>
+        </div>
+        <div class="formgrid">
+          <label>Firmenname<input id="brandName" placeholder="z. B. Musterfirma GmbH"></label>
+          <label>Produktname<input id="brandProduct" placeholder="z. B. Dienstplan Pro"></label>
+          <label class="wide">Firmenlogo hochladen
+            <input type="file" id="logoUpload" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+          </label>
+          <label>Hauptfarbe<input class="color-input" id="brandPrimary" type="color"></label>
+          <label>Seitenleiste<input value="Dunkelblau – fest eingestellt" disabled></label>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:16px"><button class="btn primary" id="saveBranding">Firmenauftritt speichern</button></div>
+      <div id="brandingMsg" style="margin-top:12px"></div>
+    </div>
+
+    <div class="card">
+      <h3>Farben der Dashboard-Kacheln</h3>
+      <p class="muted">Jede Kennzahlen-Kachel kann unabhängig an das Corporate Design angepasst werden.</p>
+      <div class="formgrid">
+        <label>Aktive Personen<input class="color-input" id="tilePeople" type="color"></label>
+        <label>S-Funktionen<input class="color-input" id="tileFunctions" type="color"></label>
+        <label>Dienste<input class="color-input" id="tileShifts" type="color"></label>
+        <label>Qualifikationen<input class="color-input" id="tileTraining" type="color"></label>
+      </div>
+      <div style="margin-top:14px">
+        <span class="muted">Schnellauswahl:</span>
+        <div class="preset-row" style="margin-top:8px">
+          <button class="preset" data-preset="blue" title="Blau" style="background:#2457d6"></button>
+          <button class="preset" data-preset="green" title="Grün" style="background:#16845b"></button>
+          <button class="preset" data-preset="purple" title="Violett" style="background:#7c3aed"></button>
+          <button class="preset" data-preset="orange" title="Orange" style="background:#d97706"></button>
+          <button class="preset" data-preset="neutral" title="Neutral" style="background:#475467"></button>
+        </div>
+      </div>
+      <div class="actions" style="margin-top:16px"><button class="btn primary" id="saveTileColors">Kachelfarben speichern</button><button class="btn" id="resetBranding">Standarddesign wiederherstellen</button></div>
+    </div>
+
+    <div class="grid g2">
+      <div class="card"><h3>Planungsregeln</h3><div class="formgrid"><label>Mindestbesetzung pro Woche<input id="setMinimum" type="number" min="1"></label><label>Max. Rufbereitschaftszeiträume pro Woche<input id="setOnCall" type="number" min="1"></label><label>Max. Wochenstunden<input id="setHours" type="number" min="1"></label><label>Mindestruhezeit in Stunden<input id="setRest" type="number" min="1"></label></div><div class="actions" style="margin-top:14px"><button class="btn primary" id="saveSettings">Regeln speichern</button></div></div>
+      <div class="card"><h3>Datensicherung</h3><p class="muted">Exportiert alle Testdaten einschließlich Logo, Firmenname und Farben als JSON-Datei.</p><div class="actions"><button class="btn" id="exportData">Daten exportieren</button><label class="btn" style="display:inline-block">Daten importieren<input type="file" id="importData" accept=".json" style="display:none"></label></div></div>
+    </div>
+  </section>
+</main>
+</div>
+</div>
+
+<script>
+const seed={
+ people:[
+  {id:1,first:'Anna',last:'Moser',personnelNo:'P-1001',phone:'+43 660 1001',email:'anna.moser@demo.at',department:'Personal und Organisation',function:'S1',role:'Teamleitung',qualifications:['Ersthilfe','Krisenstab'],active:true},
+  {id:2,first:'Markus',last:'Huber',personnelNo:'P-1002',phone:'+43 660 1002',email:'markus.huber@demo.at',department:'Krisenmanagement',function:'S2',role:'Mitarbeiter',qualifications:['Lageführung'],active:true},
+  {id:3,first:'Sarah',last:'Leitner',personnelNo:'P-1003',phone:'+43 660 1003',email:'sarah.leitner@demo.at',department:'Kommunikation',function:'S5',role:'Mitarbeiter',qualifications:['Medienarbeit'],active:true},
+  {id:4,first:'David',last:'Gruber',personnelNo:'P-1004',phone:'+43 660 1004',email:'david.gruber@demo.at',department:'IT und Infrastruktur',function:'S6',role:'Mitarbeiter',qualifications:['Funk','IT-Grundschutz'],active:true}
+ ],
+ functions:[
+  {id:'S1',minimum:1,color:'#2563eb',name:'Personal',description:'Personalplanung und Kräfteübersicht',active:true},
+  {id:'S2',minimum:1,color:'#16a34a',name:'Lage',description:'Lagebild und Dokumentation',active:true},
+  {id:'S3',minimum:1,color:'#dc2626',name:'Einsatz',description:'Operative Einsatzkoordination',active:true},
+  {id:'S4',minimum:1,color:'#d97706',name:'Versorgung',description:'Logistik und Versorgung',active:true},
+  {id:'S5',minimum:1,color:'#7c3aed',name:'Presse und Medien',description:'Öffentlichkeitsarbeit',active:true},
+  {id:'S6',minimum:1,color:'#0891b2',name:'Information und Kommunikation',description:'Kommunikation und IT',active:true}
+ ],
+ shifts:[
+  {id:1,date:new Date().toISOString().slice(0,10),personId:1,function:'S1',type:'Regeldienst',start:'08:00',end:'16:00',actualHours:8,travelHours:0,costCenter:'KST-100'},
+  {id:2,date:new Date(Date.now()+86400000).toISOString().slice(0,10),personId:2,function:'S2',type:'Rufbereitschaft',start:'16:00',end:'23:00',actualHours:1.5,travelHours:0.5,costCenter:'KST-200'}
+ ],
+ trainings:[
+  {id:1,personId:1,name:'Ersthilfe',acquired:'2025-03-01',refresh:'2026-12-01',note:'Zertifikat EH-01',expiry:new Date(Date.now()+86400000*180).toISOString().slice(0,10)},
+  {id:2,personId:3,name:'Medienrecht',acquired:'2025-09-01',refresh:'2026-08-15',note:'Interne Schulung',expiry:new Date(Date.now()+86400000*25).toISOString().slice(0,10)}
+ ],
+ settings:{minimum:6,oncall:2,hours:48,rest:11},
+ branding:{
+  company:'Dienstplan Pro',
+  product:'Dienstplan Pro',
+  logo:'',
+  primary:'#2457d6',
+  
+  tiles:{people:'#eef3ff',functions:'#ecfdf3',shifts:'#fff7e6',training:'#fff1f0'}
+ }
+};
+
+let state=JSON.parse(localStorage.getItem('dienstplanPro2'))||seed;
+state.branding=state.branding||JSON.parse(JSON.stringify(seed.branding));
+state.branding.tiles=state.branding.tiles||JSON.parse(JSON.stringify(seed.branding.tiles));
+state.people.forEach(p=>{if(!p.department)p.department='Nicht zugeordnet';delete p.percent});
+const functionPalette=['#2563eb','#16a34a','#dc2626','#d97706','#7c3aed','#0891b2','#db2777','#4f46e5','#65a30d','#ea580c'];
+state.functions.forEach((f,i)=>{if(!f.color)f.color=functionPalette[i%functionPalette.length]});
+state.shifts.forEach(s=>{s.startDate=s.startDate||s.date;s.endDate=s.endDate||s.date});
+state.functions.forEach(f=>{if(f.minimum===undefined)f.minimum=1});
+state.people.forEach((p,i)=>{p.personnelNo=p.personnelNo||`P-${1001+i}`;p.phone=p.phone||''});
+state.shifts.forEach(s=>{s.actualHours=Number(s.actualHours||0);s.travelHours=Number(s.travelHours||0);s.costCenter=s.costCenter||''});
+state.trainings.forEach(t=>{t.acquired=t.acquired||'';t.refresh=t.refresh||t.expiry;t.note=t.note||''});
+state.trainings.forEach(t=>{t.rhythmMonths=Number(t.rhythmMonths||0);t.reminderDays=Number(t.reminderDays||90)});
+let weekOffset=0;
+let lastSwapValid=false;
+
+const $=id=>document.getElementById(id);
+const save=()=>localStorage.setItem('dienstplanPro2',JSON.stringify(state));
+const fullName=p=>p?`${p.first} ${p.last}`:'Unbekannt';
+const activeFunctions=()=>state.functions.filter(f=>f.active);
+const activePeople=()=>state.people.filter(p=>p.active);
+const formatDate=d=>new Date(d+'T12:00:00').toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'});
+const hoursBetween=(s,e)=>{let [sh,sm]=s.split(':').map(Number),[eh,em]=e.split(':').map(Number);let h=(eh+em/60)-(sh+sm/60);return h<0?h+24:h};
+const shiftStartDT=s=>new Date(`${s.startDate||s.date}T${s.start||'00:00'}:00`);
+const shiftEndDT=s=>{
+ const endDate=s.endDate||s.date;
+ const time=s.end||'00:00';
+ if(time==='24:00'){
+   const d=new Date(`${endDate}T00:00:00`);d.setDate(d.getDate()+1);return d;
+ }
+ return new Date(`${endDate}T${time}:00`);
+};
+const shiftDuration=s=>Math.max(0,(shiftEndDT(s)-shiftStartDT(s))/3600000);
+const overlapsDay=(s,iso)=>{
+ const dayStart=new Date(`${iso}T00:00:00`),dayEnd=new Date(dayStart);dayEnd.setDate(dayEnd.getDate()+1);
+ return shiftStartDT(s)<dayEnd && shiftEndDT(s)>dayStart;
+};
+const periodLabel=s=>{
+ const same=(s.startDate||s.date)===(s.endDate||s.date);
+ return same?`${formatDate(s.startDate||s.date)} · ${s.start}–${s.end}`:
+ `${formatDate(s.startDate||s.date)} ${s.start} bis ${formatDate(s.endDate||s.date)} ${s.end}`;
+};
+
+const meta={
+ dashboard:['Dashboard','Aktuelle Bereitschaften, kommende Dienste und fällige Qualifikationen.'],
+ calendar:['Kalender','Dienste und Rufbereitschaften wochenweise planen.'],
+ people:['Personal','Personen erfassen, suchen und Funktionen zuordnen.'],
+ functions:['S-Funktionen','Krisenstabsfunktionen flexibel verwalten.'],
+ swap:['Diensttausch','Tauschvorgänge automatisch prüfen und durchführen.'],
+ training:['Qualifikationen','Ausbildungen, Fristen und Nachweise verwalten.'],
+ reports:['Auswertungen','Personal, Stunden und Funktionsabdeckung analysieren.'],
+ settings:['Einstellungen','Planungsregeln und Testdaten verwalten.']
+};
+
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('.view').forEach(x=>x.classList.add('hidden'));
+ b.classList.add('active');$(b.dataset.view).classList.remove('hidden');
+ const m=meta[b.dataset.view];$('topTitle').textContent=m[0];$('pageTitle').textContent=m[0];$('pageDesc').textContent=m[1];
+ renderAll();window.scrollTo({top:0,behavior:'smooth'});
+});
+
+function options(select,items,value,label){
+ select.innerHTML=items.map(x=>`<option value="${value(x)}">${label(x)}</option>`).join('');
+}
+
+
+function hexToRgba(hex,alpha){
+ const h=hex.replace('#','');const n=parseInt(h.length===3?h.split('').map(x=>x+x).join(''):h,16);
+ return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${alpha})`;
+}
+function initials(text){
+ return (text||'DP').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+}
+function applyBranding(){
+ const b=state.branding;
+ document.documentElement.style.setProperty('--primary',b.primary);
+ document.documentElement.style.setProperty('--primary2',b.primary);
+ document.documentElement.style.setProperty('--primary-soft',hexToRgba(b.primary,.10));
+ document.documentElement.style.setProperty('--tile-people',b.tiles.people);
+ document.documentElement.style.setProperty('--tile-functions',b.tiles.functions);
+ document.documentElement.style.setProperty('--tile-shifts',b.tiles.shifts);
+ document.documentElement.style.setProperty('--tile-training',b.tiles.training);
+ $('brandCompany').textContent=b.company||b.product||'Dienstplan Pro';
+ $('brandInitials').textContent=initials(b.company||b.product);
+ const mark=$('brandMark');
+ const old=mark.querySelector('img');if(old)old.remove();
+ $('brandInitials').style.display=b.logo?'none':'inline';
+ if(b.logo){const img=document.createElement('img');img.src=b.logo;img.alt='Firmenlogo';mark.appendChild(img)}
+ document.title=`${b.product||'Dienstplan Pro'} – Testprototyp`;
+}
+
+
+function getFunction(id){return state.functions.find(f=>f.id===id)}
+function functionBadge(id){
+ const f=getFunction(id);const color=f?.color||'#667085';
+ return `<span class="function-badge" style="background:${color}">${id}${f?.name?' – '+f.name:''}</span>`;
+}
+
+
+const isAdmin=()=>$('roleSelect').value==='Administrator';
+function setRolePermissions(){
+ document.querySelectorAll('.admin-only').forEach(el=>el.classList.toggle('hidden-role',!isAdmin()));
+ $('openShiftForm').classList.toggle('hidden-role',!isAdmin());
+ document.querySelectorAll('[data-admin-action]').forEach(el=>el.classList.toggle('hidden-role',!isAdmin()));
+}
+function legalCheck(personId,candidate,ignoreId=null){
+ const issues=[];
+ const s0=shiftStartDT(candidate),e0=shiftEndDT(candidate);
+ const other=state.shifts.filter(s=>s.personId===personId&&s.id!==ignoreId);
+ if(other.some(s=>shiftStartDT(s)<e0&&shiftEndDT(s)>s0))issues.push('Zeitliche Überschneidung mit einem bestehenden Dienst.');
+ const work=other.filter(s=>s.type!=='Rufbereitschaft'&&getWeek(shiftStartDT(s))===getWeek(s0)).reduce((a,s)=>a+shiftDuration(s),0);
+ const add=candidate.type==='Rufbereitschaft'?Number(candidate.actualHours||0)+Number(candidate.travelHours||0):shiftDuration(candidate);
+ if(work+add>state.settings.hours)issues.push(`Konfigurierte Wochenarbeitszeit von ${state.settings.hours} Stunden würde überschritten.`);
+ const prev=other.filter(s=>shiftEndDT(s)<=s0).sort((a,b)=>shiftEndDT(b)-shiftEndDT(a))[0];
+ if(prev){const rest=(s0-shiftEndDT(prev))/3600000;if(rest<state.settings.rest)issues.push(`Mindestruhezeit von ${state.settings.rest} Stunden wird unterschritten (${rest.toFixed(1)} h).`)}
+ if(candidate.type==='Rufbereitschaft'){
+   const month=s0.getMonth(),year=s0.getFullYear();
+   const count=other.filter(s=>s.type==='Rufbereitschaft'&&shiftStartDT(s).getMonth()===month&&shiftStartDT(s).getFullYear()===year).length+1;
+   if(count>state.settings.oncall)issues.push(`Konfiguriertes Rufbereitschaftslimit von ${state.settings.oncall} Zeiträumen im Monat wird überschritten.`);
+ }
+ return issues;
+}
+
+function addMonthsToDate(dateString,months){
+ if(!dateString||!months)return '';
+ const d=new Date(dateString+'T12:00:00');
+ const originalDay=d.getDate();
+ d.setMonth(d.getMonth()+Number(months));
+ if(d.getDate()<originalDay)d.setDate(0);
+ return d.toISOString().slice(0,10);
+}
+function subtractDays(dateString,days){
+ if(!dateString)return '';
+ const d=new Date(dateString+'T12:00:00');
+ d.setDate(d.getDate()-Number(days||0));
+ return d.toISOString().slice(0,10);
+}
+function updateQualificationDates(){
+ const acquired=$('trainingAcquired').value;
+ const rhythm=Number($('trainingRhythm').value||0);
+ const reminder=Number($('trainingReminder').value||90);
+ if(acquired&&rhythm>0){
+  const expiry=addMonthsToDate(acquired,rhythm);
+  $('trainingExpiry').value=expiry;
+  $('trainingRefresh').value=subtractDays(expiry,reminder);
+ }
+}
+
+function reportRange(){
+ const ref=new Date(($('reportDate').value||new Date().toISOString().slice(0,10))+'T12:00:00'),period=$('reportPeriod').value;
+ let start=new Date(ref),end=new Date(ref);
+ if(period==='week'){const day=(start.getDay()+6)%7;start.setDate(start.getDate()-day);end=new Date(start);end.setDate(start.getDate()+7)}
+ else if(period==='quarter'){const q=Math.floor(start.getMonth()/3)*3;start=new Date(start.getFullYear(),q,1,12);end=new Date(start.getFullYear(),q+3,1,12)}
+ else if(period==='year'){start=new Date(start.getFullYear(),0,1,12);end=new Date(start.getFullYear()+1,0,1,12)}
+ else {start=new Date('2000-01-01T00:00:00');end=new Date('2100-01-01T00:00:00')}
+ return {start,end};
+}
+function filteredShifts(){
+ const {start,end}=reportRange(),f=$('reportFunctionFilter').value;
+ return state.shifts.filter(s=>shiftStartDT(s)<end&&shiftEndDT(s)>start&&(!f||s.function===f));
+}
+
+function renderDashboard(){
+ const today=new Date();
+ $('currentTimeBadge').textContent=today.toLocaleString('de-AT');
+ const current=state.shifts
+  .filter(s=>shiftStartDT(s)<=today&&shiftEndDT(s)>today)
+  .sort((a,b)=>(a.type==='Rufbereitschaft'?0:1)-(b.type==='Rufbereitschaft'?0:1)||shiftStartDT(a)-shiftStartDT(b));
+
+ $('currentDuties').innerHTML=current.length
+  ?current.map(s=>{
+    const p=state.people.find(x=>x.id===s.personId);
+    return `<div class="duty-card" style="border-left-color:${getFunction(s.function)?.color||'#2457d6'}">
+      <div class="status-line">${functionBadge(s.function)}<span class="badge ${s.type==='Rufbereitschaft'?'warn':'ok'}">${s.type}</span></div>
+      <h3 style="margin:10px 0 4px">${fullName(p)}</h3>
+      <div class="muted">${periodLabel(s)}</div>
+      ${s.type==='Rufbereitschaft'?`<div class="mini" style="margin-top:8px">Tatsächlicher Einsatz: ${Number(s.actualHours||0).toFixed(2)} h · Wegzeit: ${Number(s.travelHours||0).toFixed(2)} h</div>`:''}
+    </div>`
+   }).join('')
+  :'<div class="widget-empty">Derzeit ist keine Bereitschaft und kein Dienst aktiv.</div>';
+
+ const next=[...state.shifts]
+  .filter(s=>shiftStartDT(s)>today)
+  .sort((a,b)=>shiftStartDT(a)-shiftStartDT(b))
+  .slice(0,6);
+ $('nextShifts').innerHTML=next.length
+  ?`<div class="scroll"><table><thead><tr><th>Beginn</th><th>Person</th><th>Funktion</th><th>Art</th></tr></thead><tbody>${next.map(s=>`<tr><td>${formatDate(s.startDate||s.date)} · ${s.start}</td><td>${fullName(state.people.find(p=>p.id===s.personId))}</td><td>${functionBadge(s.function)}</td><td>${s.type}</td></tr>`).join('')}</tbody></table></div>`
+  :'<div class="widget-empty">Keine kommenden Dienste vorhanden.</div>';
+
+ const expiry=state.trainings
+  .filter(t=>t.expiry)
+  .map(t=>({...t,days:Math.ceil((new Date(t.expiry+'T12:00:00')-today)/86400000)}))
+  .filter(t=>t.days<=180)
+  .sort((a,b)=>a.days-b.days)
+  .slice(0,6);
+
+ $('expiringQualifications').innerHTML=expiry.length
+  ?expiry.map(t=>{
+    const p=state.people.find(x=>x.id===t.personId);
+    const cls=t.days<0?'bad':t.days<=30?'bad':t.days<=90?'warn':'ok';
+    const label=t.days<0?`${Math.abs(t.days)} Tage abgelaufen`:t.days===0?'Heute fällig':`in ${t.days} Tagen`;
+    return `<div class="expiry-item">
+      <div><b>${fullName(p)}</b><br><span class="muted">${p?.department||''}</span></div>
+      <div>${t.name}<br><span class="muted">Gültig bis ${formatDate(t.expiry)}</span></div>
+      <span class="badge ${cls}">${label}</span>
+    </div>`
+   }).join('')
+  :'<div class="widget-empty">In den nächsten 180 Tagen läuft keine Qualifikation ab.</div>';
+
+ applyDashboardLayout();
+}
+
+function mondayForOffset(){
+ const d=new Date();d.setHours(12,0,0,0);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day+weekOffset*7);return d;
+}
+
+function renderPrintContent(){
+ const mon=mondayForOffset();
+ const sun=new Date(mon);sun.setDate(mon.getDate()+6);
+ const b=state.branding;
+ const logo=b.logo?`<img class="print-logo" src="${b.logo}" alt="Firmenlogo">`:`<div style="font-size:18pt;font-weight:800">${initials(b.company||b.product)}</div>`;
+ const note=$('printNote')?$('printNote').value.trim():'';
+ $('printHeader').innerHTML=`<div class="print-header-row"><div>${logo}</div><div style="flex:1"><h1 class="print-title">${b.company||'Dienstplan Pro'} – Dienstplan</h1><div class="print-meta">${note?note+' · ':''}Kalenderwoche ${getWeek(mon)} · ${mon.toLocaleDateString('de-AT')} bis ${sun.toLocaleDateString('de-AT')}</div></div></div>`;
+ $('printFooter').innerHTML=`<span>Erstellt mit ${b.product||'Dienstplan Pro'}</span><span>Ausgedruckt am ${new Date().toLocaleString('de-AT')}</span>`;
+ const pid=+$('printPersonSelect').value;
+ const p=state.people.find(x=>x.id===pid);
+ if(p){
+  let rows=[];
+  for(let i=0;i<7;i++){
+   const d=new Date(mon);d.setDate(mon.getDate()+i);const iso=d.toISOString().slice(0,10);
+   const shifts=state.shifts.filter(s=>s.personId===pid&&overlapsDay(s,iso));
+   if(shifts.length){
+    shifts.forEach(s=>rows.push(`<tr><td>${d.toLocaleDateString('de-AT',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})}</td><td>${shiftDuration(s).toFixed(1)} h</td><td>${s.type}</td><td>${s.function}</td></tr>`));
+   }else{
+    rows.push(`<tr><td>${d.toLocaleDateString('de-AT',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'})}</td><td>–</td><td>Kein Dienst</td><td>–</td></tr>`);
+   }
+  }
+  $('printPersonSheet').innerHTML=`<h2>Dienstplan: ${fullName(p)}</h2><p>Abteilung: ${p.department||'Nicht zugeordnet'} · Funktion: ${p.function} – ${getFunction(p.function)?.name||''}</p><table class="person-print-table"><thead><tr><th>Datum</th><th>Zeit</th><th>Dienstart</th><th>S-Funktion</th></tr></thead><tbody>${rows.join('')}</tbody></table>`;
+ }
+}
+function printWeekPlan(){
+ document.body.classList.remove('print-person');
+ renderPrintContent();
+ window.print();
+}
+function printEmployeePlan(){
+ if(!$('printPersonSelect').value){alert('Bitte zuerst eine Person auswählen.');return}
+ document.body.classList.add('print-person');
+ renderPrintContent();
+ window.print();
+ setTimeout(()=>document.body.classList.remove('print-person'),500);
+}
+
+function renderCalendar(){
+ const mon=mondayForOffset(), days=['Mo','Di','Mi','Do','Fr','Sa','So'];
+ $('weekLabel').textContent=`KW ${getWeek(mon)} · ${mon.toLocaleDateString('de-AT')}`;
+ let html='<div class="calcell calhead">Person</div>';
+ for(let i=0;i<7;i++){let d=new Date(mon);d.setDate(mon.getDate()+i);html+=`<div class="calcell calhead">${days[i]}<br><span class="muted">${d.toLocaleDateString('de-AT')}</span></div>`}
+ activePeople().forEach(p=>{
+  html+=`<div class="calcell"><b>${fullName(p)}</b><br>${functionBadge(p.function)}</div>`;
+  for(let i=0;i<7;i++){let d=new Date(mon);d.setDate(mon.getDate()+i);let iso=d.toISOString().slice(0,10);let shifts=state.shifts.filter(s=>s.personId===p.id&&overlapsDay(s,iso));html+=`<div class="calcell">${shifts.map(s=>`<div class="shift" style="background:${hexToRgba(getFunction(s.function)?.color||'#2457d6',.12)};border-left-color:${getFunction(s.function)?.color||'#2457d6'}"><b>${s.function}</b> · ${s.type}<br>${periodLabel(s)}<br><span class="table-actions"><button class="btn small admin-only" data-admin-action onclick="editShift(${s.id})">Bearbeiten</button><button class="btn small danger admin-only" data-admin-action onclick="deleteShift(${s.id})">Löschen</button></span></div>`).join('')}</div>`}
+ });
+ $('calendarGrid').innerHTML=html;
+ options($('shiftPerson'),activePeople(),x=>x.id,x=>fullName(x));
+ options($('shiftFunction'),activeFunctions(),x=>x.id,x=>`${x.id} – ${x.name}`);
+ options($('printPersonSelect'),activePeople(),x=>x.id,x=>fullName(x));
+ renderPrintContent();
+}
+function getWeek(d){const x=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));x.setUTCDate(x.getUTCDate()+4-(x.getUTCDay()||7));const y=new Date(Date.UTC(x.getUTCFullYear(),0,1));return Math.ceil((((x-y)/86400000)+1)/7)}
+
+function renderPeople(){
+ const q=$('peopleSearch').value.toLowerCase();
+ const arr=activePeople().filter(p=>[p.first,p.last,p.email,p.department,p.function,p.qualifications.join(' ')].join(' ').toLowerCase().includes(q));
+ $('peopleTable').innerHTML=arr.length?`<div class="scroll"><table><thead><tr><th>Name</th><th>Abteilung</th><th>Funktion</th><th>Rolle</th><th>Qualifikationen</th><th></th></tr></thead><tbody>${arr.map(p=>`<tr><td><b>${fullName(p)}</b><br><span class="muted">${p.email||''}</span></td><td>${p.department||'Nicht zugeordnet'}</td><td>${functionBadge(p.function)}</td><td>${p.role}</td><td>${p.qualifications.map(q=>`<span class="badge">${q}</span>`).join(' ')}</td><td><button class="btn small danger" onclick="deactivatePerson(${p.id})">Deaktivieren</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Keine Personen gefunden.</div>';
+ options($('pFunction'),activeFunctions(),x=>x.id,x=>`${x.id} – ${x.name}`);
+}
+
+function renderFunctions(){
+ $('functionCoverage').innerHTML=activeFunctions().map(f=>{
+   const available=activePeople().filter(p=>p.function===f.id).length;
+   const minimum=Number(f.minimum||0);
+   const sufficient=available>=minimum;
+   const percent=minimum?Math.min(100,available/minimum*100):100;
+   return `<div class="coverage-box">
+     <div class="row"><span>${functionBadge(f.id)}</span><span class="badge ${sufficient?'ok':'bad'}">${sufficient?'Ausreichend':'Unterbesetzt'}</span></div>
+     <div style="margin-top:9px"><b>${available}</b> verfügbar · Mindestpersonal ${minimum}</div>
+     <div class="progress" style="margin-top:9px"><span style="width:${percent}%;background:${f.color}"></span></div>
+   </div>`;
+ }).join('');
+
+ $('functionList').innerHTML=`<div class="scroll"><table><thead><tr><th>Kürzel</th><th>Farbe</th><th>Mindestpersonal</th><th>Bezeichnung</th><th>Beschreibung</th><th>Status</th><th></th></tr></thead><tbody>${state.functions.map(f=>`<tr><td><b>${f.id}</b></td><td><input class="color-input" type="color" value="${f.color}" onchange="changeFunctionColor('${f.id}',this.value)" style="width:62px"></td><td><input type="number" min="0" value="${f.minimum||0}" onchange="changeFunctionMinimum('${f.id}',this.value)" style="width:80px"></td><td>${f.name}</td><td>${f.description}</td><td><span class="badge ${f.active?'ok':'bad'}">${f.active?'Aktiv':'Inaktiv'}</span></td><td><button class="btn small" onclick="toggleFunction('${f.id}')">${f.active?'Deaktivieren':'Aktivieren'}</button></td></tr>`).join('')}</tbody></table></div>`;
+}
+
+function renderSwap(){
+ options($('swapFrom'),activePeople(),x=>x.id,x=>fullName(x));
+ options($('swapTo'),activePeople(),x=>x.id,x=>fullName(x));
+ options($('swapShift'),state.shifts,x=>x.id,x=>`${periodLabel(x)} · ${x.function} · ${fullName(state.people.find(p=>p.id===x.personId))}`);
+}
+function renderTraining(){
+ options($('trainingPerson'),activePeople(),x=>x.id,x=>fullName(x));
+ const rows=state.trainings.map(t=>{const p=state.people.find(x=>x.id===t.personId);const today=new Date(),refresh=t.refresh?new Date(t.refresh+'T12:00:00'):null,expiry=t.expiry?new Date(t.expiry+'T12:00:00'):null;let cls='ok',status='Gültig';if(expiry&&expiry<today){cls='bad';status='Abgelaufen'}else if(refresh&&refresh<=today){cls='warn';status='Auffrischung fällig'}else if(refresh&&((refresh-today)/86400000)<60){cls='warn';status='Auffrischung bald'}return `<tr><td><b>${fullName(p)}</b><br><span class="muted">${p?.department||''} · ${p?.function||''}</span></td><td>${t.name}</td><td>${Number(t.rhythmMonths||0)>0?`${t.rhythmMonths} Monate`:'Individuell'}</td><td>${t.acquired?formatDate(t.acquired):'–'}</td><td>${t.expiry?formatDate(t.expiry):'–'}</td><td>${t.refresh?formatDate(t.refresh):'–'}</td><td><span class="badge ${cls}">${status}</span></td><td>${t.note||''}</td><td><button class="btn small danger admin-only" data-admin-action onclick="deleteTraining(${t.id})">Löschen</button></td></tr>`}).join('');
+ $('trainingTable').innerHTML=`<div class="scroll"><table><thead><tr><th>Person</th><th>Qualifikation</th><th>Rhythmus</th><th>Erworben</th><th>Gültig bis</th><th>Auffrischung</th><th>Status</th><th>Nachweis</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+function renderReports(){
+ options($('reportFunctionFilter'),[{id:'',name:'Alle Funktionen'},...activeFunctions()],x=>x.id,x=>x.id?`${x.id} – ${x.name}`:x.name);
+ const shifts=filteredShifts();
+ $('rPeople').textContent=activePeople().length;
+ $('rHours').textContent=shifts.reduce((a,s)=>a+(s.type==='Rufbereitschaft'?Number(s.actualHours||0)+Number(s.travelHours||0):shiftDuration(s)),0).toFixed(1)+' h';
+ const valid=state.trainings.filter(t=>!t.expiry||new Date(t.expiry+'T12:00:00')>=new Date()).length;
+ $('rQual').textContent=state.trainings.length?Math.round(valid/state.trainings.length*100)+'%':'0%';
+ const activity=activePeople().map(p=>{const ps=shifts.filter(s=>s.personId===p.id),duties=ps.length,oncall=ps.filter(s=>s.type==='Rufbereitschaft').length,hours=ps.reduce((a,s)=>a+(s.type==='Rufbereitschaft'?Number(s.actualHours||0)+Number(s.travelHours||0):shiftDuration(s)),0);return {p,duties,oncall,hours}}).sort((a,b)=>b.hours-a.hours);
+ const avg=activity.length?activity.reduce((a,x)=>a+x.hours,0)/activity.length:0;
+ $('activityTable').innerHTML=`<div class="scroll"><table><thead><tr><th>Person</th><th>Funktion</th><th>Dienste</th><th>Rufbereitschaften</th><th>Arbeits-/Einsatzstunden</th><th>Aktivität</th></tr></thead><tbody>${activity.map(x=>{const st=x.hours>avg*1.25?'Sehr aktiv':x.hours<avg*.5?'Wenig aktiv':'Normal';const cls=st==='Sehr aktiv'?'ok':st==='Wenig aktiv'?'warn':'';return `<tr><td>${fullName(x.p)}</td><td>${functionBadge(x.p.function)}</td><td>${x.duties}</td><td>${x.oncall}</td><td>${x.hours.toFixed(2)}</td><td><span class="badge ${cls}">${st}</span></td></tr>`}).join('')}</tbody></table></div>`;
+ $('reportFunctions').innerHTML=activeFunctions().map(f=>{const n=activePeople().filter(p=>p.function===f.id).length;return `<div><div class="row"><span>${functionBadge(f.id)}</span><span>${n} / Minimum ${f.minimum||0}</span></div><div class="progress" style="margin-top:7px"><span style="width:${Math.min(100,(n/Math.max(1,f.minimum||1))*100)}%;background:${f.color}"></span></div></div>`}).join('');
+}
+function renderSettings(){
+ $('setMinimum').value=state.settings.minimum;$('setOnCall').value=state.settings.oncall;$('setHours').value=state.settings.hours;$('setRest').value=state.settings.rest;
+ const b=state.branding;
+ $('brandName').value=b.company||'';$('brandProduct').value=b.product||'Dienstplan Pro';
+ $('brandPrimary').value=b.primary;
+ $('tilePeople').value=b.tiles.people;$('tileFunctions').value=b.tiles.functions;$('tileShifts').value=b.tiles.shifts;$('tileTraining').value=b.tiles.training;
+ $('logoPreview').innerHTML=b.logo?`<img src="${b.logo}" alt="Logovorschau">`:'<span class="muted">Kein Logo</span>';
+}
+function renderAll(){applyBranding();renderDashboard();renderCalendar();renderPeople();renderFunctions();renderSwap();renderTraining();renderReports();renderSettings();setRolePermissions();}
+
+$('openPersonForm').onclick=()=>$('personFormCard').classList.remove('hidden');
+$('cancelPerson').onclick=()=>$('personFormCard').classList.add('hidden');
+$('savePerson').onclick=()=>{if(!isAdmin())return;
+ if(!$('pFirst').value.trim()||!$('pLast').value.trim()){ $('personMsg').innerHTML='<div class="notice bad">Vorname und Nachname sind erforderlich.</div>';return}
+ state.people.push({id:Date.now(),first:$('pFirst').value.trim(),last:$('pLast').value.trim(),email:$('pEmail').value.trim(),department:$('pDepartment').value.trim()||'Nicht zugeordnet',function:$('pFunction').value,role:$('pRole').value,qualifications:$('pQualifications').value.split(',').map(x=>x.trim()).filter(Boolean),active:true});
+ save();['pFirst','pLast','pEmail','pDepartment','pQualifications'].forEach(id=>$(id).value='');$('personMsg').innerHTML='<div class="notice ok">Person wurde angelegt.</div>';renderAll()
+};
+$('peopleSearch').oninput=renderPeople;
+window.deactivatePerson=id=>{const p=state.people.find(x=>x.id===id);if(p){p.active=false;save();renderAll()}};
+
+$('saveFunction').onclick=()=>{if(!isAdmin())return;
+ const code=$('fCode').value.trim().toUpperCase();if(!code){$('functionMsg').innerHTML='<div class="notice bad">Das Kürzel ist erforderlich.</div>';return}
+ if(state.functions.some(f=>f.id===code)){$('functionMsg').innerHTML='<div class="notice bad">Dieses Kürzel existiert bereits.</div>';return}
+ state.functions.push({id:code,color:$('fColor').value,minimum:Number($('fMinimum').value||0),name:$('fName').value.trim()||`Benutzerdefinierte Funktion ${code}`,description:$('fDesc').value.trim()||'Keine Beschreibung hinterlegt',active:true});
+ save();$('fCode').value=$('fName').value=$('fDesc').value='';$('fColor').value='#db2777';$('functionMsg').innerHTML='<div class="notice ok">Funktion wurde angelegt.</div>';renderAll()
+};
+window.toggleFunction=id=>{const f=state.functions.find(x=>x.id===id);f.active=!f.active;save();renderAll()};
+window.changeFunctionColor=(id,color)=>{const f=state.functions.find(x=>x.id===id);if(f){f.color=color;save();renderAll()}};
+window.changeFunctionMinimum=(id,value)=>{const f=state.functions.find(x=>x.id===id);if(f&&isAdmin()){f.minimum=Math.max(0,Number(value||0));save();renderAll()}};
+
+$('openShiftForm').onclick=()=>{if(!isAdmin())return;
+ $('shiftFormCard').classList.remove('hidden');
+ const mon=mondayForOffset(),sun=new Date(mon);sun.setDate(mon.getDate()+6);
+ $('shiftStartDate').value=mon.toISOString().slice(0,10);
+ $('shiftEndDate').value=sun.toISOString().slice(0,10);
+ $('editingShiftId').value='';$('shiftFormTitle').textContent='Neuen Dienst anlegen';$('shiftStart').value='08:00';$('shiftEnd').value='24:00';$('shiftType').value='Rufbereitschaft';$('shiftActualHours').value=0;$('shiftTravelHours').value=0;$('shiftCostCenter').value='';
+};
+$('cancelShift').onclick=()=>$('shiftFormCard').classList.add('hidden');
+$('saveShift').onclick=()=>{if(!isAdmin()){$('shiftMsg').innerHTML='<div class="notice bad">Nur Administratoren dürfen Dienste speichern.</div>';return}
+ const startDate=$('shiftStartDate').value,endDate=$('shiftEndDate').value,start=$('shiftStart').value,end=$('shiftEnd').value.trim();
+ if(!startDate||!endDate){$('shiftMsg').innerHTML='<div class="notice bad">Bitte Beginn- und Enddatum auswählen.</div>';return}
+ if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(start)||!/^(([01]\d|2[0-3]):[0-5]\d|24:00)$/.test(end)){
+   $('shiftMsg').innerHTML='<div class="notice bad">Bitte gültige Uhrzeiten verwenden. Beim Ende ist auch 24:00 zulässig.</div>';return
+ }
+ const pid=+$('shiftPerson').value;
+ const editingId=Number($('editingShiftId').value||0);const candidate={id:editingId||Date.now(),startDate,endDate,personId:pid,function:$('shiftFunction').value,type:$('shiftType').value,start,end,actualHours:Number($('shiftActualHours').value||0),travelHours:Number($('shiftTravelHours').value||0),costCenter:$('shiftCostCenter').value.trim()};
+ if(shiftEndDT(candidate)<=shiftStartDT(candidate)){
+   $('shiftMsg').innerHTML='<div class="notice bad">Das Ende muss nach dem Beginn liegen.</div>';return
+ }
+ const conflicts=state.shifts.filter(s=>s.id!==editingId&&s.personId===pid && shiftStartDT(s)<shiftEndDT(candidate) && shiftEndDT(s)>shiftStartDT(candidate));
+ if(conflicts.length){
+   $('shiftMsg').innerHTML='<div class="notice bad">Für diese Person besteht im gewählten Zeitraum bereits ein überschneidender Dienst.</div>';return
+ }
+ if(candidate.type!=='Rufbereitschaft'){
+   const workHours=shiftDuration(candidate);
+   if(workHours>state.settings.hours){
+     $('shiftMsg').innerHTML=`<div class="notice bad">Der Regeldienst überschreitet die eingestellte Höchstarbeitszeit von ${state.settings.hours} Stunden.</div>`;return
+   }
+ }
+ const issues=legalCheck(pid,candidate,editingId);if(issues.length){$('shiftMsg').innerHTML='<div class="notice warn"><b>Prüfhinweise:</b><br>'+issues.join('<br>')+'</div>'}
+ if(editingId){const ix=state.shifts.findIndex(s=>s.id===editingId);state.shifts[ix]=candidate}else state.shifts.push(candidate);
+ save();$('shiftMsg').innerHTML=`<div class="notice ok">${candidate.function} wurde für ${periodLabel(candidate)} gespeichert.</div>`;renderAll()
+};
+window.deleteShift=id=>{if(!isAdmin())return;state.shifts=state.shifts.filter(x=>x.id!==id);save();renderAll()};
+window.editShift=id=>{if(!isAdmin())return;const s=state.shifts.find(x=>x.id===id);if(!s)return;$('shiftFormCard').classList.remove('hidden');$('editingShiftId').value=s.id;$('shiftFormTitle').textContent='Dienst bearbeiten';$('shiftStartDate').value=s.startDate||s.date;$('shiftEndDate').value=s.endDate||s.date;$('shiftStart').value=s.start;$('shiftEnd').value=s.end;$('shiftPerson').value=s.personId;$('shiftFunction').value=s.function;$('shiftType').value=s.type;$('shiftActualHours').value=s.actualHours||0;$('shiftTravelHours').value=s.travelHours||0;$('shiftCostCenter').value=s.costCenter||'';window.scrollTo({top:$('shiftFormCard').offsetTop-90,behavior:'smooth'})};
+
+$('printWeek').onclick=printWeekPlan;
+$('printPerson').onclick=printEmployeePlan;
+$('printPersonSelect').onchange=renderPrintContent;
+$('printNote').oninput=renderPrintContent;
+$('prevWeek').onclick=()=>{weekOffset--;renderCalendar()};$('nextWeek').onclick=()=>{weekOffset++;renderCalendar()};$('todayWeek').onclick=()=>{weekOffset=0;renderCalendar()};
+
+$('checkSwap').onclick=()=>{
+ const from=+$('swapFrom').value,to=+$('swapTo').value,sid=+$('swapShift').value;
+ const s=state.shifts.find(x=>x.id===sid),a=state.people.find(x=>x.id===from),b=state.people.find(x=>x.id===to);
+ let issues=[];
+ if(!s){issues.push('Kein Dienst gewählt.')}else{
+  if(s.personId!==from)issues.push('Der gewählte Dienst gehört nicht zur abgebenden Person.');
+  if(from===to)issues.push('Abgebende und übernehmende Person sind identisch.');
+  if(b.function!==s.function)issues.push(`Tausch ist nur innerhalb derselben S-Funktion möglich. ${b.function} passt nicht zu ${s.function}.`);
+  const required=(a.qualifications||[]).filter(q=>q);const validNames=state.trainings.filter(t=>t.personId===to&&(!t.expiry||new Date(t.expiry+'T12:00:00')>=new Date())).map(t=>t.name);const missing=required.filter(q=>!validNames.includes(q)&&!(b.qualifications||[]).includes(q));if(missing.length)issues.push('Fehlende Qualifikationen: '+missing.join(', '));
+  issues.push(...legalCheck(to,{...s,personId:to},s.id));
+  const weekly=state.shifts.filter(x=>x.personId===to&&getWeek(shiftStartDT(x))===getWeek(shiftStartDT(s))&&x.type!=='Rufbereitschaft').reduce((sum,x)=>sum+shiftDuration(x),0);
+  if(s.type!=='Rufbereitschaft'&&weekly+shiftDuration(s)>state.settings.hours)issues.push('Maximale Wochenarbeitszeit würde überschritten.');
+ }
+ lastSwapValid=!issues.length;
+ $('swapResult').className='notice '+(lastSwapValid?'ok':'bad');
+ $('swapResult').innerHTML=lastSwapValid?'Tausch ist zulässig: Funktion und Arbeitszeit passen.':issues.join('<br>');
+};
+$('executeSwap').onclick=()=>{if(!isAdmin()){$('swapResult').className='notice warn';$('swapResult').textContent='Der Tausch wurde geprüft, muss aber von einem Administrator freigegeben werden.';return}
+ if(!lastSwapValid){$('swapResult').className='notice warn';$('swapResult').textContent='Bitte zuerst eine erfolgreiche Prüfung durchführen.';return}
+ const s=state.shifts.find(x=>x.id===+$('swapShift').value);s.personId=+$('swapTo').value;save();lastSwapValid=false;$('swapResult').className='notice ok';$('swapResult').textContent='Diensttausch wurde durchgeführt.';renderAll()
+};
+
+$('addTraining').onclick=()=>{
+ if(!$('trainingName').value.trim()||!$('trainingExpiry').value)return;
+ state.trainings.push({id:Date.now(),personId:+$('trainingPerson').value,name:$('trainingName').value.trim(),acquired:$('trainingAcquired').value,rhythmMonths:Number($('trainingRhythm').value||0),reminderDays:Number($('trainingReminder').value||90),expiry:$('trainingExpiry').value,refresh:$('trainingRefresh').value,note:$('trainingNote').value.trim()});save();['trainingName','trainingAcquired','trainingExpiry','trainingRefresh','trainingNote'].forEach(id=>$(id).value='');$('trainingRhythm').value='0';$('trainingReminder').value='90';renderAll()
+};
+window.deleteTraining=id=>{state.trainings=state.trainings.filter(x=>x.id!==id);save();renderAll()};
+
+
+let pendingLogo=null;
+$('logoUpload').onchange=e=>{
+ const file=e.target.files[0];if(!file)return;
+ if(file.size>2*1024*1024){$('brandingMsg').innerHTML='<div class="notice bad">Das Logo darf maximal 2 MB groß sein.</div>';e.target.value='';return}
+ const reader=new FileReader();
+ reader.onload=()=>{pendingLogo=reader.result;$('logoPreview').innerHTML=`<img src="${pendingLogo}" alt="Logovorschau">`;$('brandingMsg').innerHTML='<div class="notice">Logo ausgewählt. Bitte noch speichern.</div>'};
+ reader.readAsDataURL(file);
+};
+$('removeLogo').onclick=()=>{pendingLogo='';$('logoPreview').innerHTML='<span class="muted">Kein Logo</span>';$('brandingMsg').innerHTML='<div class="notice">Logo wird beim Speichern entfernt.</div>'};
+$('saveBranding').onclick=()=>{
+ state.branding.company=$('brandName').value.trim()||'Dienstplan Pro';
+ state.branding.product=$('brandProduct').value.trim()||'Dienstplan Pro';
+ state.branding.primary=$('brandPrimary').value;
+ if(pendingLogo!==null){state.branding.logo=pendingLogo;pendingLogo=null}
+ save();applyBranding();renderSettings();$('brandingMsg').innerHTML='<div class="notice ok">Firmenauftritt wurde gespeichert.</div>';
+};
+$('saveTileColors').onclick=()=>{
+ state.branding.tiles={people:$('tilePeople').value,functions:$('tileFunctions').value,shifts:$('tileShifts').value,training:$('tileTraining').value};
+ save();applyBranding();$('brandingMsg').innerHTML='<div class="notice ok">Kachelfarben wurden gespeichert.</div>';
+};
+document.querySelectorAll('.preset').forEach(btn=>btn.onclick=()=>{
+ const sets={
+  blue:['#eef3ff','#e8f0ff','#dce8ff','#f2f5ff'],
+  green:['#ecfdf3','#e8f8ef','#dff5e8','#f1fbf5'],
+  purple:['#f3efff','#eee8ff','#e8ddff','#f7f3ff'],
+  orange:['#fff4e5','#fff0dc','#ffe7c2','#fff8ed'],
+  neutral:['#f2f4f7','#eaecf0','#e4e7ec','#f8fafc']
+ };
+ const s=sets[btn.dataset.preset];$('tilePeople').value=s[0];$('tileFunctions').value=s[1];$('tileShifts').value=s[2];$('tileTraining').value=s[3];
+});
+$('resetBranding').onclick=()=>{
+ if(!confirm('Firmenname, Logo und alle Farben auf Standard zurücksetzen?'))return;
+ state.branding=JSON.parse(JSON.stringify(seed.branding));pendingLogo=null;save();renderAll();$('brandingMsg').innerHTML='<div class="notice ok">Standarddesign wurde wiederhergestellt.</div>';
+};
+
+$('saveSettings').onclick=()=>{state.settings={minimum:+$('setMinimum').value,oncall:+$('setOnCall').value,hours:+$('setHours').value,rest:+$('setRest').value};save();alert('Regeln gespeichert.');renderAll()};
+$('resetDemo').onclick=()=>{if(confirm('Alle lokalen Änderungen löschen und Demo zurücksetzen?')){localStorage.removeItem('dienstplanPro2');location.reload()}};
+$('exportData').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='dienstplan-pro-daten.json';a.click();URL.revokeObjectURL(a.href)};
+$('importData').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);state.branding=state.branding||JSON.parse(JSON.stringify(seed.branding));state.branding.tiles=state.branding.tiles||JSON.parse(JSON.stringify(seed.branding.tiles));
+state.people.forEach(p=>{if(!p.department)p.department='Nicht zugeordnet';delete p.percent});state.functions.forEach((f,i)=>{if(!f.color)f.color=functionPalette[i%functionPalette.length]});state.shifts.forEach(s=>{s.startDate=s.startDate||s.date;s.endDate=s.endDate||s.date});save();renderAll();alert('Daten importiert.')}catch{alert('Ungültige Datei.')}};r.readAsText(f)};
+
+$('roleSelect').onchange=()=>{setRolePermissions();renderAll()};
+$('reportPeriod').onchange=renderReports;$('reportDate').onchange=renderReports;$('reportFunctionFilter').onchange=renderReports;
+$('reportDate').value=new Date().toISOString().slice(0,10);
+
+function downloadWorkbook(sheets,name){
+ const wb=XLSX.utils.book_new();
+ Object.entries(sheets).forEach(([sheet,rows])=>{const ws=XLSX.utils.json_to_sheet(rows);XLSX.utils.book_append_sheet(wb,ws,sheet.slice(0,31))});
+ XLSX.writeFile(wb,name);
+}
+$('exportActivity').onclick=()=>{
+ const shifts=filteredShifts();
+ const rows=activePeople().map(p=>{const ps=shifts.filter(s=>s.personId===p.id);return {Personalnummer:p.personnelNo,Name:fullName(p),Abteilung:p.department,'S-Funktion':p.function,Dienste:ps.length,Rufbereitschaften:ps.filter(s=>s.type==='Rufbereitschaft').length,'Tatsächliche Stunden':ps.reduce((a,s)=>a+(s.type==='Rufbereitschaft'?Number(s.actualHours||0)+Number(s.travelHours||0):shiftDuration(s)),0)}})
+ downloadWorkbook({'Aktivität':rows,'S-Funktionen':state.functions.map(f=>({Kürzel:f.id,Bezeichnung:f.name,Mindestpersonal:f.minimum,Personalpool:activePeople().filter(p=>p.function===f.id).length}))},'DienstplanPro_Aktivitaet.xlsx')
+};
+$('exportServices').onclick=()=>{
+ const rows=filteredShifts().map(s=>{const p=state.people.find(x=>x.id===s.personId);return {Personalnummer:p?.personnelNo,Name:fullName(p),Abteilung:p?.department,'S-Funktion':s.function,Dienstart:s.type,Beginn:`${s.startDate||s.date} ${s.start}`,Ende:`${s.endDate||s.date} ${s.end}`,'Geplante Dauer':shiftDuration(s),'Tatsächlicher Einsatz':Number(s.actualHours||0),Wegzeit:Number(s.travelHours||0),Kostenstelle:s.costCenter||''}})
+ downloadWorkbook({'Dienstplan':rows},'DienstplanPro_Dienste.xlsx')
+};
+$('exportPayroll').onclick=()=>{
+ const rows=[];
+ filteredShifts().forEach(s=>{const p=state.people.find(x=>x.id===s.personId);const base={Personalnummer:p?.personnelNo,Name:fullName(p),Abteilung:p?.department,'S-Funktion':s.function,Kostenstelle:s.costCenter||'',Beginn:`${s.startDate||s.date} ${s.start}`,Ende:`${s.endDate||s.date} ${s.end}`};if(s.type==='Rufbereitschaft'){rows.push({...base,Lohnart:'Rufbereitschaft',Menge:shiftDuration(s),Einheit:'Stunden'});if(Number(s.actualHours||0)>0)rows.push({...base,Lohnart:'Einsatz aus Rufbereitschaft',Menge:Number(s.actualHours),Einheit:'Stunden'});if(Number(s.travelHours||0)>0)rows.push({...base,Lohnart:'Wegzeit',Menge:Number(s.travelHours),Einheit:'Stunden'})}else rows.push({...base,Lohnart:s.type,Menge:shiftDuration(s),Einheit:'Stunden'})});
+ downloadWorkbook({'Payroll':rows,'Hinweise':[{'Hinweis':'Zuschläge, Lohnarten und kollektivvertragliche Regeln müssen kundenspezifisch konfiguriert und fachlich geprüft werden.'}]},'DienstplanPro_Payroll.xlsx')
+};
+
+function normalizeHeader(value){
+ return String(value||'').trim().toLowerCase()
+  .replace(/[ä]/g,'ae').replace(/[ö]/g,'oe').replace(/[ü]/g,'ue').replace(/[ß]/g,'ss')
+  .replace(/[^a-z0-9]/g,'');
+}
+function mapPersonnelRow(row){
+ const normalized={};Object.keys(row).forEach(k=>normalized[normalizeHeader(k)]=row[k]);
+ const get=(...keys)=>{for(const k of keys){const v=normalized[normalizeHeader(k)];if(v!==undefined&&v!==null&&String(v).trim()!=='')return String(v).trim()}return ''};
+ return {personnelNo:get('Personalnummer','Personal Nr','Mitarbeiternummer')||`P-${Date.now()}-${Math.floor(Math.random()*1000)}`,first:get('Vorname'),last:get('Nachname','Familienname'),department:get('Abteilung','Organisationseinheit')||'Nicht zugeordnet',function:get('S-Funktion','S Funktion','Funktion').toUpperCase(),role:get('Rolle')||'Mitarbeiter',email:get('E-Mail','Email'),phone:get('Telefon','Telefonnummer'),qualifications:get('Qualifikationen','Qualifikation').split(/[,;]+/).map(x=>x.trim()).filter(Boolean)};
+}
+$('peopleExcelImport').onchange=e=>{
+ if(!isAdmin())return;const file=e.target.files[0];if(!file)return;const reader=new FileReader();
+ reader.onload=()=>{try{
+  const wb=file.name.toLowerCase().endsWith('.csv')?XLSX.read(reader.result,{type:'string'}):XLSX.read(reader.result,{type:'array'});
+  const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});let added=0,skipped=[];
+  rows.forEach((row,index)=>{const p=mapPersonnelRow(row);
+   if(!p.first||!p.last){skipped.push(`Zeile ${index+2}: Vorname oder Nachname fehlt`);return}
+   if(!p.function||!state.functions.some(f=>f.id===p.function)){skipped.push(`Zeile ${index+2}: unbekannte S-Funktion ${p.function||'leer'}`);return}
+   if(state.people.some(x=>x.personnelNo===p.personnelNo)){skipped.push(`Zeile ${index+2}: Personalnummer ${p.personnelNo} existiert bereits`);return}
+   state.people.push({id:Date.now()+index,...p,active:true});added++;
+  });
+  save();renderAll();$('peopleImportMsg').innerHTML=`<div class="notice ${skipped.length?'warn':'ok'}"><b>${added} Person(en) importiert.</b>${skipped.length?'<br>'+skipped.slice(0,8).join('<br>')+(skipped.length>8?`<br>… und ${skipped.length-8} weitere Hinweise`:''):''}</div>`;
+ }catch(err){$('peopleImportMsg').innerHTML='<div class="notice bad">Die Datei konnte nicht gelesen werden. Bitte die Excel-Vorlage verwenden.</div>'}e.target.value=''};
+ file.name.toLowerCase().endsWith('.csv')?reader.readAsText(file):reader.readAsArrayBuffer(file);
+};
+$('downloadPeopleTemplate').onclick=()=>{
+ const rows=[{'Personalnummer':'P-2001','Vorname':'Max','Nachname':'Mustermann','Abteilung':'Technik','S-Funktion':'S1','Rolle':'Mitarbeiter','E-Mail':'max.mustermann@firma.at','Telefon':'+43 660 000000','Qualifikationen':'Erste Hilfe, Funk'}];
+ downloadWorkbook({'Personalimport':rows,'Hinweise':[{'Feld':'Vorname/Nachname','Pflicht':'Ja','Hinweis':'Beide Felder sind erforderlich.'},{'Feld':'S-Funktion','Pflicht':'Ja','Hinweis':'Muss bereits im System existieren, z. B. S1.'},{'Feld':'Qualifikationen','Pflicht':'Nein','Hinweis':'Mehrere Werte mit Komma oder Semikolon trennen.'}]},'DienstplanPro_Personalimport.xlsx');
+};
+
+$('trainingAcquired').onchange=updateQualificationDates;
+$('trainingRhythm').onchange=updateQualificationDates;
+$('trainingReminder').onchange=updateQualificationDates;
+
+const dashboardDefaults={
+ order:['current','upcoming','qualifications'],
+ sizes:{current:'wide',upcoming:'normal',qualifications:'normal'},
+ visible:{current:true,upcoming:true,qualifications:true}
+};
+let dashboardEditMode=false;
+function getDashboardLayout(){
+ try{
+  const stored=JSON.parse(localStorage.getItem('dp_dashboard_layout')||'null');
+  return stored&&stored.order?stored:JSON.parse(JSON.stringify(dashboardDefaults));
+ }catch(e){return JSON.parse(JSON.stringify(dashboardDefaults))}
+}
+function saveDashboardLayout(layout){
+ localStorage.setItem('dp_dashboard_layout',JSON.stringify(layout));
+}
+function applyDashboardLayout(){
+ const grid=$('dashboardGrid');if(!grid)return;
+ const layout=getDashboardLayout();
+ layout.order.forEach(key=>{
+  const el=grid.querySelector(`[data-widget="${key}"]`);
+  if(el)grid.appendChild(el);
+ });
+ grid.querySelectorAll('.dashboard-widget').forEach(el=>{
+  const key=el.dataset.widget;
+  el.dataset.size=layout.sizes[key]||'normal';
+  el.classList.toggle('hidden-widget',layout.visible[key]===false);
+  el.draggable=dashboardEditMode;
+ });
+ if($('showCurrentWidget'))$('showCurrentWidget').checked=layout.visible.current!==false;
+ if($('showUpcomingWidget'))$('showUpcomingWidget').checked=layout.visible.upcoming!==false;
+ if($('showQualificationWidget'))$('showQualificationWidget').checked=layout.visible.qualifications!==false;
+}
+function setDashboardEditMode(enabled){
+ dashboardEditMode=enabled;
+ document.body.classList.toggle('dashboard-editing',enabled);
+ $('editDashboard').classList.toggle('hidden',enabled);
+ applyDashboardLayout();
+}
+$('editDashboard').onclick=()=>setDashboardEditMode(true);
+$('finishDashboardEdit').onclick=()=>setDashboardEditMode(false);
+$('resetDashboardLayout').onclick=()=>{
+ saveDashboardLayout(JSON.parse(JSON.stringify(dashboardDefaults)));
+ applyDashboardLayout();
+};
+[['showCurrentWidget','current'],['showUpcomingWidget','upcoming'],['showQualificationWidget','qualifications']].forEach(([id,key])=>{
+ $(id).onchange=e=>{
+  const layout=getDashboardLayout();layout.visible[key]=e.target.checked;saveDashboardLayout(layout);applyDashboardLayout();
+ };
+});
+document.querySelectorAll('[data-widget-size]').forEach(btn=>{
+ btn.onclick=e=>{
+  e.stopPropagation();
+  const widget=btn.closest('.dashboard-widget');
+  const layout=getDashboardLayout();layout.sizes[widget.dataset.widget]=btn.dataset.widgetSize;saveDashboardLayout(layout);applyDashboardLayout();
+ };
+});
+document.querySelectorAll('[data-hide-widget]').forEach(btn=>{
+ btn.onclick=e=>{
+  e.stopPropagation();
+  const layout=getDashboardLayout();layout.visible[btn.dataset.hideWidget]=false;saveDashboardLayout(layout);applyDashboardLayout();
+ };
+});
+let draggedWidget=null;
+document.querySelectorAll('.dashboard-widget').forEach(widget=>{
+ widget.addEventListener('dragstart',e=>{
+  if(!dashboardEditMode){e.preventDefault();return}
+  draggedWidget=widget;widget.classList.add('dragging');
+ });
+ widget.addEventListener('dragend',()=>{
+  widget.classList.remove('dragging');
+  const layout=getDashboardLayout();
+  layout.order=[...$('dashboardGrid').querySelectorAll('.dashboard-widget')].map(x=>x.dataset.widget);
+  saveDashboardLayout(layout);draggedWidget=null;
+ });
+ widget.addEventListener('dragover',e=>{
+  if(!dashboardEditMode||!draggedWidget||draggedWidget===widget)return;
+  e.preventDefault();
+  const rect=widget.getBoundingClientRect();
+  const before=e.clientY<rect.top+rect.height/2;
+  $('dashboardGrid').insertBefore(draggedWidget,before?widget:widget.nextSibling);
+ });
+});
+document.querySelectorAll('[data-open-view]').forEach(btn=>{
+ btn.onclick=()=>{
+  const target=btn.dataset.openView;
+  const nav=document.querySelector(`nav button[data-view="${target}"]`);
+  if(nav)nav.click();
+ };
+});
+
+renderAll();
+</script>
+</body>
+</html>
